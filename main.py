@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from part_1.routes import auth, contact, users
+from routes import auth, contact, users
 from fastapi_limiter import FastAPILimiter
-from part_1.conf.config import settings
+from conf.config import settings
 import redis.asyncio as redis
 from fastapi.middleware.cors import CORSMiddleware
 

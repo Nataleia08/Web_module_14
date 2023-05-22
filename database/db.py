@@ -4,7 +4,7 @@ import pathlib
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-from part_1.conf.config import settings
+from conf.config import settings
 
 SQLALCHEMY_DATABASE_URL = settings.sqlalchemy_database_url
 

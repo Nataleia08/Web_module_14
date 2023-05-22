@@ -2,8 +2,8 @@ from datetime import datetime
 from libgravatar import Gravatar
 from sqlalchemy.orm import Session
 
-from part_1.database.models import User
-from part_1.schemas import UserAuthModel
+from database.models import User
+from schemas import UserAuthModel
 
 def birthday_in_this_year(date_birthday: datetime):
     new_date = datetime(year=2023, month=date_birthday.month, day=date_birthday.day).date()

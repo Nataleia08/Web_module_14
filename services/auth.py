@@ -8,9 +8,9 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 import redis.asyncio as redis
 
-from part_1.database.db import get_db
-from part_1.repository import users as repository_users
-from part_1.conf.config import settings
+from database.db import get_db
+from repository import users as repository_users
+from conf.config import settings
 import pickle
 
 

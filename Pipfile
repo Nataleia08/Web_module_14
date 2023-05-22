@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+redis = "*"
+fastapi-limiter = "*"
+pydantic = "*"
+jose = "*"
+passlib = "*"
+sqlalchemy = "*"
+cloudinary = "*"
+libgravatar = "*"
+sphinx = "*"
+
+[dev-packages]
+sphinx = "*"
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.2"
