@@ -99,7 +99,6 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
     :param token: str: Get the token from the url
     :param db: Session: Pass the database session to the function
     :return: A message if the email is already confirmed
-    :doc-author: Trelent
     """
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
