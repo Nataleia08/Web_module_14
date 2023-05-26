@@ -20,6 +20,7 @@ psycopg2 = "*"
 asyncpg = "*"
 python-jose = "*"
 python-multipart = "*"
+pytest = "*"
 
 [dev-packages]
 sphinx = "*"
@@ -27,4 +28,3 @@ sphinx = "*"
 [requires]
 python_version = "3.11"
 python_full_version = "3.11.2"
-

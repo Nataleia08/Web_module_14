@@ -15,7 +15,7 @@ router = APIRouter(prefix='/contacts', tags=["contacts"])
 
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def create_user(body:ContactModel, current_user: User = Depends(auth_service.get_current_user), db:Session = Depends(get_db)):
+async def create_contact(body:ContactModel, current_user: User = Depends(auth_service.get_current_user), db:Session = Depends(get_db)):
     """
     The create_user function creates a new user in the database.
         It takes in a ContactModel object, which is validated by pydantic.
@@ -39,7 +39,7 @@ async def create_user(body:ContactModel, current_user: User = Depends(auth_servi
 
 
 @router.get("/", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def read_users(skip: int = 0, limit: int = Query(default=10, le=100, ge=10), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def read_contacts(skip: int = 0, limit: int = Query(default=10, le=100, ge=10), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_users function returns a list of users.
 
@@ -56,7 +56,7 @@ async def read_users(skip: int = 0, limit: int = Query(default=10, le=100, ge=10
 
 
 @router.get("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def read_user(contact_id: int = Path(description="The ID of the contact", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def read_contact(contact_id: int = Path(description="The ID of the contact", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_user function will return a contact with the given ID.
     If the user does not exist, it will raise an HTTP 404 error.
@@ -73,7 +73,7 @@ async def read_user(contact_id: int = Path(description="The ID of the contact", 
     return search_contact
 
 @router.put("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def update_user(body:ContactModel, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user),  db: Session = Depends(get_db)):
+async def update_contact(body:ContactModel, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user),  db: Session = Depends(get_db)):
     """
     The update_user function updates a user in the database.
 
@@ -100,7 +100,7 @@ async def update_user(body:ContactModel, contact_id: int = Path(description="The
     return new_contact
 
 @router.patch("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def update_user(email: str = None, first_name: str = None, last_name: str = None, day_birthday: date = None, phone_number: str = None, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def update_contact_part(email: str = None, first_name: str = None, last_name: str = None, day_birthday: date = None, phone_number: str = None, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The update_user function updates a user in the database.
 
@@ -137,7 +137,7 @@ async def update_user(email: str = None, first_name: str = None, last_name: str 
 
 
 @router.delete("/{contact_id}", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def delete_user(contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def delete_contact(contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The delete_user function deletes a user from the database.
         The function takes in an ID of a user and returns nothing.
@@ -157,7 +157,7 @@ async def delete_user(contact_id: int = Path(description="The ID of the user", g
 
 
 @router.get("/birthdays", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def read_users(days:int = 7, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def list_birthdays(days:int = 7, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_users function returns a list of contacts that have birthdays in the next 7 days.
         The function takes an optional parameter, days, which is set to 7 by default.
@@ -177,7 +177,7 @@ async def read_users(days:int = 7, current_user: User = Depends(auth_service.get
 
 
 @router.get("/search/email", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_users(email: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_email(email: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for a user's contacts by email.
 
@@ -190,7 +190,7 @@ async def search_users(email: str, current_user: User = Depends(auth_service.get
     return list_contacts
 
 @router.get("/search/first_name", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_users(first_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_firstname(first_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts in the database that match a given first name.
 
@@ -203,7 +203,7 @@ async def search_users(first_name: str, current_user: User = Depends(auth_servic
     return list_contacts
 
 @router.get("/search/last_name", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_users(last_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_lastname(last_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts by last name.
         The function takes a string as an argument and returns a list of contacts.
@@ -217,7 +217,7 @@ async def search_users(last_name: str, current_user: User = Depends(auth_service
     return list_contacts
 
 @router.get("/search", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_users(email: str = None, first_name: str = None, last_name: str = None, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_all(email: str = None, first_name: str = None, last_name: str = None, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts in the database.
         It takes three optional parameters: email, first_name and last_name.
