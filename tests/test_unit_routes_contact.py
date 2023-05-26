@@ -8,129 +8,82 @@ from schemas import ContactModel, ContactResponse, UserAuthModel, UserDb, UserAu
 
 from unittest.mock import MagicMock, patch
 
-import pytest
+class TestRoutesContacts(unittest.IsolatedAsyncioTestCase):
+    def setUp(self):
+        self.session = MagicMock(spec=Session)
+        self.user = User(id=1)
+        self.contact = Contact(id = 1)
 
-from database.models import User
-from services.auth import auth_service
-from routes.contact i
+    async def test_create_contact(self):
+        pass
 
+    async def test_read_contacts(self):
+        pass
 
-@pytest.fixture()
-def token(client, user, session, monkeypatch):
-    mock_send_email = MagicMock()
-    monkeypatch.setattr("src.routes.auth.send_email", mock_send_email)
-    client.post("/api/auth/signup", json=user)
-    current_user: User = session.query(User).filter(User.email == user.get('email')).first()
-    current_user.confirmed = True
-    session.commit()
-    response = client.post(
-        "/api/auth/login",
-        data={"username": user.get('email'), "password": user.get('password')},
-    )
-    data = response.json()
-    return data["access_token"]
+    async def test_read_contact(self):
+        pass
 
+    async def test_update_contact(self):
+        pass
 
-def test_create_contact(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.post(
-            "/api/contact",
-            json={"name": "test_tag"},
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 201, response.text
-        data = response.json()
-        assert data["name"] == "test_tag"
-        assert "id" in data
+    async def test_update_contact_part(self):
+        pass
 
+    async def test_delete_contact(self):
+        pass
 
-def test_get_tag(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.get(
-            "/api/tags/1",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 200, response.text
-        data = response.json()
-        assert data["name"] == "test_tag"
-        assert "id" in data
+    async def test_list_birthdays(self):
+        pass
 
+    async def test_search_contacts_email(self):
+        pass
 
-def test_get_tag_not_found(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.get(
-            "/api/tags/2",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 404, response.text
-        data = response.json()
-        assert data["detail"] == "Tag not found"
+    async def test_search_contacts_firstname(self):
+        pass
 
+    async def test_search_contacts_lastname(self):
+        pass
 
-def test_get_tags(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.get(
-            "/api/tags",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 200, response.text
-        data = response.json()
-        assert isinstance(data, list)
-        assert data[0]["name"] == "test_tag"
-        assert "id" in data[0]
+    async def test_search_contacts_all(self):
+        pass
+
+    async def test_create_contact_failed(self):
+        pass
+
+    async def test_read_contacts_failed(self):
+        pass
+
+    async def test_read_contact_failed(self):
+        pass
+
+    async def test_update_contact_failed(self):
+        pass
+
+    async def test_update_contact_part_failed(self):
+        pass
+
+    async def test_delete_contact_failed(self):
+        pass
+
+    async def test_list_birthdays_failed(self):
+        pass
+
+    async def test_search_contacts_email_failed(self):
+        pass
+
+    async def test_search_contacts_firstname_failed(self):
+        pass
+
+    async def test_search_contacts_lastname_failed(self):
+        pass
+
+    async def test_search_contacts_all_failed(self):
+        pass
 
 
-def test_update_tag(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.put(
-            "/api/tags/1",
-            json={"name": "new_test_tag"},
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 200, response.text
-        data = response.json()
-        assert data["name"] == "new_test_tag"
-        assert "id" in data
+if __name__ == '__main__':
+    unittest.main()
 
 
-def test_update_tag_not_found(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.put(
-            "/api/tags/2",
-            json={"name": "new_test_tag"},
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 404, response.text
-        data = response.json()
-        assert data["detail"] == "Tag not found"
 
 
-def test_delete_tag(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.delete(
-            "/api/tags/1",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 200, response.text
-        data = response.json()
-        assert data["name"] == "new_test_tag"
-        assert "id" in data
-
-
-def test_repeat_delete_tag(client, token):
-    with patch.object(auth_service, 'r') as r_mock:
-        r_mock.get.return_value = None
-        response = client.delete(
-            "/api/tags/1",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        assert response.status_code == 404, response.text
-        data = response.json()
-        assert data["detail"] == "Tag not found"
