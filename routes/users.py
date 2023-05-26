@@ -7,7 +7,7 @@ from database.db import get_db
 from database.models import User
 from repository import users as repository_users
 from services.auth import auth_service
-from conf.config import settings
+from configure.config import settings
 from schemas import UserDb, UserAuthResponse
 
 router = APIRouter(prefix="/users", tags=["users"])

@@ -10,7 +10,7 @@ import redis.asyncio as redis
 
 from database.db import get_db
 from repository import users as repository_users
-from conf.config import settings
+from configure.config import settings
 import pickle
 
 

@@ -33,3 +33,7 @@ class TestDBActions(unittest.IsolatedAsyncioTestCase):
 
     async def test_create_new_password(self):
         pass
+
+
+if __name__ == '__main__':
+    unittest.main()
