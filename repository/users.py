@@ -1,3 +1,6 @@
+""""Module repository.users"""
+
+
 from datetime import datetime
 from libgravatar import Gravatar
 from sqlalchemy.orm import Session

@@ -1,3 +1,5 @@
+""""Module main"""
+
 from fastapi import FastAPI
 from routes import auth, contact, users
 from fastapi_limiter import FastAPILimiter

@@ -1,3 +1,6 @@
+""""Module routs.auth"""
+
+
 from typing import List
 
 from fastapi import APIRouter, HTTPException, Depends, status, Security, BackgroundTasks, Request

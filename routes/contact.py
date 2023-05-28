@@ -1,3 +1,6 @@
+""""Module routs.contact"""
+
+
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 from repository.users import birthday_in_this_year

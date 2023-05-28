@@ -1,3 +1,5 @@
+""""Module services.auth"""
+
 from typing import Optional
 
 from jose import JWTError, jwt

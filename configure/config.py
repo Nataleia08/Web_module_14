@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     mail_username: str
     mail_password: str
     mail_from: str
-    mail_port: int
+    mail_port: int = 465
     mail_server: str
     redis_host: str = 'localhost'
     redis_port: int = 6379
