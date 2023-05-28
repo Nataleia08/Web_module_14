@@ -31,13 +31,26 @@ class TestDBActions(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(hasattr(result, "id"))
 
     async def test_create_user(self):
-        pass
+        body = UserAuthModel(username = "tester", email= "test@gmail.com", password= "1234567")
+        new_user = User(id= 2, username = "tester", email= "test@gmail.com", password= "1234567")
+        self.session.query().filter().first.return_value = new_user
+        result = await create_user(body=body, db=self.session)
+        self.assertEqual(new_user.email, result.email)
+        self.assertEqual(new_user.confirmed_email, result.confirmed_email)
+        self.assertEqual(new_user.password, result.password)
+        self.assertTrue(hasattr(result, "id"))
 
     async def test_update_token(self):
         pass
 
+
     async def test_confirmed_email(self):
-        pass
+        body = UserAuthModel(username="tester", email="test@gmail.com", password="1234567")
+        new_user = User(id=3, username="tester", email="test@gmail.com", password="1234567")
+        self.session.query().filter().first.return_value = new_user
+        result = await create_user(body=body, db=self.session)
+        await confirmed_email(result, db=self.session)
+        self.assertTrue(result.confirmed_email)
 
     async def test_update_avatar(self):
         pass
