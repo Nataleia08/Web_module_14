@@ -24,6 +24,7 @@ pytest = "*"
 pytest-mock = "*"
 httpx = "*"
 bcrypt = "*"
+pytest-cov = "*"
 
 [dev-packages]
 sphinx = "*"

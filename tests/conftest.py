@@ -27,6 +27,8 @@ def session():
     db = TestingSessionLocal()
     try:
         yield db
+    except Exception:
+        db.rollback()
     finally:
         db.close()
 
