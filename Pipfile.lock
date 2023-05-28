@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "89f1915b0e6cdab4fc91cd8212d89951645b3ebfc8b497807fd925e5ba992650"
+            "sha256": "0608670ee2e836fd2f764a15965823379d55365ed39e3cf2a05be933c9431699"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -35,11 +35,11 @@
         },
         "anyio": {
             "hashes": [
-                "sha256:25ea0d673ae30af41a0c442f81cf3b38c7e79fdc7b60335a4c14e05eb0947421",
-                "sha256:fbbe32bd270d2a2ef3ed1c5d45041250284e31fc0a4df4a5a6071842051a51e3"
+                "sha256:275d9973793619a5374e1c89a4f4ad3f4b0a5510a2b5b939444bee8f4c4d37ce",
+                "sha256:eddca883c4175f14df8aedce21054bfca3adb70ffe76a9f607aef9d7fa2ea7f0"
             ],
-            "markers": "python_full_version >= '3.6.2'",
-            "version": "==3.6.2"
+            "markers": "python_version >= '3.7'",
+            "version": "==3.7.0"
         },
         "async-timeout": {
             "hashes": [
@@ -349,6 +349,22 @@
             "markers": "python_version >= '3.7'",
             "version": "==0.14.0"
         },
+        "httpcore": {
+            "hashes": [
+                "sha256:125f8375ab60036db632f34f4b627a9ad085048eef7cb7d2616fea0f739f98af",
+                "sha256:5581b9c12379c4288fe70f43c710d16060c10080617001e6b22a3b6dbcbefd36"
+            ],
+            "markers": "python_version >= '3.7'",
+            "version": "==0.17.2"
+        },
+        "httpx": {
+            "hashes": [
+                "sha256:06781eb9ac53cde990577af654bd990a4949de37a28bdb4a230d434f3a30b9bd",
+                "sha256:5853a43053df830c20f8110c5e69fe44d035d850b2dfe795e196f00fdb774bdd"
+            ],
+            "index": "pypi",
+            "version": "==0.24.1"
+        },
         "idna": {
             "hashes": [
                 "sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4",
@@ -563,6 +579,14 @@
             ],
             "index": "pypi",
             "version": "==7.3.1"
+        },
+        "pytest-mock": {
+            "hashes": [
+                "sha256:f4c973eeae0282963eb293eb173ce91b091a79c1334455acfac9ddee8a1c784b",
+                "sha256:fbbdb085ef7c252a326fd8cdcac0aa3b1333d8811f131bdcc701002e1be7ed4f"
+            ],
+            "index": "pypi",
+            "version": "==3.10.0"
         },
         "python-dotenv": {
             "hashes": [
