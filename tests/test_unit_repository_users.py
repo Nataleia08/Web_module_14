@@ -70,22 +70,10 @@ class TestDBActions(unittest.IsolatedAsyncioTestCase):
 
 
     async def test_get_user_by_email_failed(self):
-        pass
+        self.session.query().filter().first.return_value = None
+        result = await get_user_by_email("bla_bla@gmail.com", db=self.session)
+        self.assertIsNone(result)
 
-    async def test_create_user_failed(self):
-        pass
-
-    async def test_update_token_failed(self):
-        pass
-
-    async def test_confirmed_email_failed(self):
-        pass
-
-    async def test_update_avatar_failed(self):
-        pass
-
-    async def test_create_new_password_failed(self):
-        pass
 
 if __name__ == '__main__':
     unittest.main()
