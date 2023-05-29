@@ -95,7 +95,7 @@ async def update_avatar(email, url: str, db: Session) -> User:
     db.commit()
     return user
 
-async def create_new_password(email, password, url: str, db: Session):
+async def create_new_password(email, password, db: Session):
     """
     The create_new_password function creates a new password for the user.
         Args:

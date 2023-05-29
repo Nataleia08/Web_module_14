@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from database.models import User, Contact
 from schemas import ContactModel, ContactResponse, UserAuthModel, UserDb, UserAuthResponse, TokenModel, RequestEmail
-from repository.users import birthday_in_this_year, get_user_by_email, create_user, update_token, confirmed_email, update_avatar,create_new_password
+from repository.users import birthday_in_this_year, get_user_by_email, create_user, update_token, confirmed_email, update_avatar, create_new_password
 from datetime import datetime
 
 class TestDBActions(unittest.IsolatedAsyncioTestCase):
@@ -41,22 +41,33 @@ class TestDBActions(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(hasattr(result, "id"))
 
     async def test_update_token(self):
-        pass
+        user_data = User(refresh_token = "token")
+        self.session.query().filter().first.return_value = user_data
+        token = "new_token"
+        await update_token(user_data, "new_token", db=self.session)
+        self.assertEqual(user_data.refresh_token, token)
 
 
     async def test_confirmed_email(self):
-        body = UserAuthModel(username="tester", email="test@gmail.com", password="1234567")
-        new_user = User(id=3, username="tester", email="test@gmail.com", password="1234567")
-        self.session.query().filter().first.return_value = new_user
-        result = await create_user(body=body, db=self.session)
-        await confirmed_email(result, db=self.session)
-        self.assertTrue(result.confirmed_email)
+        user_data = User(confirmed_email = False)
+        self.session.query().filter().first.return_value = user_data
+        await confirmed_email(user_data.email, db=self.session)
+        self.assertTrue(user_data.confirmed_email)
 
     async def test_update_avatar(self):
-        pass
+        user_data = User()
+        self.session.query().filter().first.return_value = user_data
+        now_avatar = user_data.avatar
+        await update_avatar(user_data.email, "https://www.edu.goit.global/uk/learn/7460925/10926565/12574686/textbook", db=self.session)
+        self.assertNotEqual(user_data.avatar, now_avatar)
 
     async def test_create_new_password(self):
-        pass
+        user_data = User(password = "123456789")
+        self.session.query().filter().first.return_value = user_data
+        new_password = "000000000"
+        await create_new_password(user_data.email, "000000000", db=self.session)
+        self.assertEqual(user_data.password, new_password)
+
 
     async def test_get_user_by_email_failed(self):
         pass
