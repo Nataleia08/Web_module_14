@@ -7,17 +7,12 @@ from database.models import User, Contact
 from schemas import ContactModel, ContactResponse, UserAuthModel, UserDb, UserAuthResponse, TokenModel, RequestEmail
 from services.auth import auth_service
 
-class TestServicesAuth(unittest.IsolatedAsyncioTestCase):
+
+class TestServicesAuth2(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.session = MagicMock(spec=Session)
         self.user = User(id=1)
         self.contact = Contact(id = 1)
-
-    async def test_verify_password(self):
-        pass
-
-    async def test_get_password_hash(self):
-        pass
 
     async def test_create_access_token(self):
         pass

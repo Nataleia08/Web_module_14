@@ -149,6 +149,6 @@ def test_repeat_delete_contact(client, token, monkeypatch):
         )
         assert response.status_code == 404, response.text
         data = response.json()
-        assert data["detail"] == "Tag not found"
+        assert data["detail"] == "Contact not found"
 
 

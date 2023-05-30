@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, Depends, status, Security, BackgroundTasks, Request
@@ -42,41 +42,6 @@ class TestRoutsAuth(unittest.IsolatedAsyncioTestCase):
         self.session.query().filter().first.return_value = new_user
         with self.assertRaises(HTTPException) as cm:
             await login(body=body_oauth, db=self.session)
-
-
-
-    async def test_login(self): # ?????????????????
-        pass
-        # body_oauth = MagicMock(spec=OAuth2PasswordRequestForm)
-        # body_oauth.username = "tester"
-        # body_oauth.password ="1234567"
-        # body_oauth.confirmed_email = True
-        # user_data = User(confirmed_email = True, password ="1234567")
-        # self.session.query().filter().first.return_value = user_data
-        # result = await login(body = body_oauth , db=self.session)
-        # self.assertIsNotNone(hasattr(result["access_token"]))
-        # self.assertIsNotNone(hasattr(result["refresh_token"]))
-        # self.assertEqual(result["token_type"], "bearer")
-
-
-    async def test_confirmed_email(self):
-        pass
-        # token = MagicMock(spec=jwt.encode)
-        # user_data = User(email="test9@gmail.com", confirmed_email=False)
-        # self.session.query().filter().first.return_value = user_data
-        # self.session.auth_service.get_email_from_token(token) = user_data.email
-        # await confirmed_email(token = token, db=self.session)
-        # self.assertTrue(user_data.confirmed_email)
-
-    async def test_confirmed_email_failed(self):
-        token = MagicMock(spec=jwt.encode)
-        payload = MagicMock(jwt.decode)
-        user_data = User(email="test9@gmail.com", confirmed_email=True)
-        self.session.query().filter().first.return_value = user_data
-        email = "test9@gmail.com"
-        self.session.query().filter().first.return_value = email
-        with self.assertRaises(HTTPException) as cm:
-            await confirmed_email(token = token, db=self.session)
 
 
     async def test_refresh_token(self):
