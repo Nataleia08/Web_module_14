@@ -118,7 +118,7 @@ def test_update_contact_not_found(client, token, monkeypatch):
         )
         assert response.status_code == 404, response.text
         data = response.json()
-        assert data["detail"] == "Tag not found"
+        assert data["detail"] == "Contact not found"
 
 
 def test_delete_contact(client, token, monkeypatch):
@@ -152,3 +152,5 @@ def test_repeat_delete_contact(client, token, monkeypatch):
         assert data["detail"] == "Contact not found"
 
 
+if __name__ == "__main__":
+    pytest.main()

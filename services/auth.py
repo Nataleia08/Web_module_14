@@ -160,7 +160,7 @@ class Auth:
         token = jwt.encode(to_encode, self.SECRET_KEY, algorithm=self.ALGORITHM)
         return token
 
-    async def get_email_from_token(self, token: str):
+    async def get_email_from_token(self, token: str = Depends(oauth2_scheme)):
         """
         The get_email_from_token function takes a token as an argument and returns the email address associated with that token.
         The function uses the jwt library to decode the token, which is then used to return the email address.

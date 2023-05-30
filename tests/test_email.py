@@ -7,13 +7,10 @@ import pytest
 
 
 @pytest.fixture()
-def token(client, user, session, monkeypatch):
-    client.post("/api/auth/signup", json=user)
-    current_user: User = session.query(User).filter(User.email == user.get('email')).first()
-    session.commit()
+def token(client, current_user, session, monkeypatch):
     response = client.post(
         "/api/auth/login",
-        data={"username": user.get('email'), "password": user.get('password')},
+        data={"username": current_user.get('email'), "password": current_user.get('password')},
     )
     data = response.json()
     return data["access_token"]
@@ -42,7 +39,6 @@ def test_confirmed_email(client, token, monkeypatch):
         monkeypatch.setattr('fastapi_limiter.FastAPILimiter.redis', AsyncMock())
         monkeypatch.setattr('fastapi_limiter.FastAPILimiter.identifier', AsyncMock())
         monkeypatch.setattr('fastapi_limiter.FastAPILimiter.http_callback', AsyncMock())
-
         response = client.post(
             "/confirmed_email/{token}",
             json={"email": "test@gamil.com", "first_name": "Tester", "last_name": "Testerovich", "phone_number": "+380668889900", "day_birthday": "2000-05-28"},
