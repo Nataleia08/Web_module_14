@@ -90,8 +90,6 @@ async def update_contact(body:ContactModel, contact_id: int = Path(description="
     new_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if new_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
-    if new_contact:
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "This email is exists!")
     new_contact.email = body.email
     new_contact.first_name = body.first_name
     new_contact.last_name = body.last_name
@@ -121,8 +119,6 @@ async def update_contact_part(email: str = None, first_name: str = None, last_na
     new_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if new_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
-    if (email is not None) and (new_contact is not None):
-        raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "This email is exists!")
     if email:
         new_contact.email = email
     if first_name:
@@ -175,7 +171,7 @@ async def list_birthdays(days:int = 7, current_user: User = Depends(auth_service
     for i in range(days):
         new_days = (datetime.now() + timedelta(days=i)).date()
         contacts = db.query(Contact).filter(and_(Contact.birthday_now == new_days, Contact.user_id == current_user.id)).all()
-        list_contacts.append(contacts)
+        list_contacts.extend(contacts)
     return list_contacts
 
 
