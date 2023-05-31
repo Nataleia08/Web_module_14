@@ -45,7 +45,7 @@ class TestRoutsAuth(unittest.IsolatedAsyncioTestCase):
 
 
     async def test_refresh_token(self):
-        result = await refresh_token(credentials= )
+        pass
 
     async def test_refresh_token_failed(self):
         pass

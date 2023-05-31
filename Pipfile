@@ -25,6 +25,7 @@ pytest-mock = "*"
 httpx = "*"
 bcrypt = "*"
 pytest-cov = "*"
+pytest-xdist = "*"
 
 [dev-packages]
 sphinx = "*"
@@ -33,5 +34,5 @@ sphinx = "*"
 python_version = "3.11"
 python_full_version = "3.11.2"
 
-[pytest]
-pythonpath = ["."]
+[tool]
+pytest = {ini_options.pythonpath = ["."] }
