@@ -1,11 +1,13 @@
 import unittest
 from unittest.mock import MagicMock
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
 from database.models import User, Contact
 from schemas import ContactModel, ContactResponse, UserAuthModel, UserDb, UserAuthResponse, TokenModel, RequestEmail
-from routes.contact import create_contact
+from routes.contact import create_contact, read_contact, read_contacts
+from fastapi import HTTPException
 
 from unittest.mock import MagicMock, patch
 
@@ -20,9 +22,19 @@ class TestRoutesContacts(unittest.IsolatedAsyncioTestCase):
         self.session.query().filter().first.return_value = None
         result = await create_contact(body= body, current_user = self.user, db=self.session)
         self.assertEqual(result.email, "test4566@gamil.com")
+        self.assertEqual(result.first_name, "Tester")
+        self.assertEqual(result.last_name, "Testerovich")
+        self.assertEqual(result.phone_number, "+380668889900")
+        self.assertEqual(result.day_birthday, datetime(year=2000, month=5, day =28).date())
+        self.assertTrue(hasattr(result, "id"))
+
+
 
     async def test_read_contacts(self):
-        pass
+        list_contacts = [Contact(user_id = 1), Contact(user_id = 1), Contact(user_id = 1)]
+        self.session.query().filter().offset().limit().all.return_value = list_contacts
+        result = await read_contacts(skip = 0, limit = 100, current_user = self.user, db=self.session)
+        self.assertEqual(result, list_contacts)
 
     async def test_read_contact(self):
         pass
@@ -52,10 +64,15 @@ class TestRoutesContacts(unittest.IsolatedAsyncioTestCase):
         pass
 
     async def test_create_contact_failed(self):
-        pass
+        body = ContactModel(email="test4566@gamil.com", first_name="Tester", last_name="Testerovich",
+                            phone_number="+380668889900", day_birthday="2000-05-28")
+        with self.assertRaises(HTTPException) as sm:
+            await create_contact(body=body, current_user=self.user, db=self.session)
 
-    async def test_read_contacts_failed(self):
-        pass
+    async def test_read_contacts_not_found(self):
+        self.session.query().filter().offset().limit().all.return_value = None
+        result = await read_contacts(skip=0, limit=100, current_user=self.user, db=self.session)
+        self.assertIsNone(result)
 
     async def test_read_contact_failed(self):
         pass
