@@ -1,10 +1,11 @@
 """"Module routs.contact"""
 
 
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Security
 from sqlalchemy.orm import Session
 from repository.users import birthday_in_this_year
 from fastapi import FastAPI, Path, Query, Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from schemas import ContactResponse, ContactModel
 from database.db import get_db
 from database.models import User, Contact
@@ -12,13 +13,14 @@ from datetime import datetime, timedelta, date
 from typing import List
 from sqlalchemy import and_
 from services.auth import auth_service
+from repository import users as repository_users
 from fastapi_limiter.depends import RateLimiter
 
 router = APIRouter(prefix='/contacts', tags=["contacts"])
-
+security = HTTPBearer()
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def create_contact(body:ContactModel, current_user: User = Depends(auth_service.get_current_user), db:Session = Depends(get_db)):
+async def create_contact(body:ContactModel, credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db:Session = Depends(get_db)):
     """
     The create_user function creates a new user in the database.
         It takes in a ContactModel object, which is validated by pydantic.
@@ -30,6 +32,8 @@ async def create_contact(body:ContactModel, current_user: User = Depends(auth_se
     :param db:Session: Access the database
     :return: The newly created contact object
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     new_contact = db.query(Contact).filter(and_(Contact.email == body.email, Contact.user_id == current_user.id)).first()
     if new_contact:
         raise HTTPException(status_code = status.HTTP_409_CONFLICT, detail = "This email is exists!")
@@ -42,7 +46,7 @@ async def create_contact(body:ContactModel, current_user: User = Depends(auth_se
 
 
 @router.get("/", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def read_contacts(skip: int = 0, limit: int = Query(default=10, le=100, ge=10), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def read_contacts(skip: int = 0, limit: int = Query(default=10, le=100, ge=10), credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_users function returns a list of users.
 
@@ -54,12 +58,14 @@ async def read_contacts(skip: int = 0, limit: int = Query(default=10, le=100, ge
     :param db: Session: Access the database
     :return: A list of contacts
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     list_contacts = db.query(Contact).filter(Contact.user_id == current_user.id).offset(skip).limit(limit).all()
     return list_contacts
 
 
 @router.get("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def read_contact(contact_id: int = Path(description="The ID of the contact", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def read_contact(contact_id: int = Path(description="The ID of the contact", ge=1), credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_user function will return a contact with the given ID.
     If the user does not exist, it will raise an HTTP 404 error.
@@ -70,13 +76,15 @@ async def read_contact(contact_id: int = Path(description="The ID of the contact
     :param db: Session: Access the database
     :return: A contact object, which is defined in the models
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     search_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if search_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
     return search_contact
 
 @router.put("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def update_contact(body:ContactModel, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user),  db: Session = Depends(get_db)):
+async def update_contact(body:ContactModel, contact_id: int = Path(description="The ID of the user", ge=1), credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user),  db: Session = Depends(get_db)):
     """
     The update_user function updates a user in the database.
 
@@ -87,6 +95,8 @@ async def update_contact(body:ContactModel, contact_id: int = Path(description="
     :param db: Session: Get the database session
     :return: The updated user
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     new_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if new_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
@@ -101,7 +111,7 @@ async def update_contact(body:ContactModel, contact_id: int = Path(description="
     return new_contact
 
 @router.patch("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def update_contact_part(email: str = None, first_name: str = None, last_name: str = None, day_birthday: date = None, phone_number: str = None, contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def update_contact_part(email: str = None, first_name: str = None, last_name: str = None, day_birthday: date = None, phone_number: str = None, contact_id: int = Path(description="The ID of the user", ge=1), credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The update_user function updates a user in the database.
 
@@ -116,6 +126,8 @@ async def update_contact_part(email: str = None, first_name: str = None, last_na
     :param db: Session: Get access to the database
     :return: The updated contact
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     new_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if new_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
@@ -136,7 +148,7 @@ async def update_contact_part(email: str = None, first_name: str = None, last_na
 
 
 @router.delete("/{contact_id}", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def delete_contact(contact_id: int = Path(description="The ID of the user", ge=1), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def delete_contact(contact_id: int = Path(description="The ID of the user", ge=1), credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The delete_user function deletes a user from the database.
         The function takes in an ID of a user and returns nothing.
@@ -148,6 +160,8 @@ async def delete_contact(contact_id: int = Path(description="The ID of the user"
     :param db: Session: Get the database session
     :return: A 204 status code, which means that the request was successful and there is no content to return
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     delete_contact = db.query(Contact).filter(and_(Contact.id == contact_id, Contact.user_id == current_user.id)).first()
     if delete_contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not found')
@@ -156,7 +170,7 @@ async def delete_contact(contact_id: int = Path(description="The ID of the user"
 
 
 @router.get("/birthdays", dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def list_birthdays(days:int = 7, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def list_birthdays(days:int = 7, credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The read_users function returns a list of contacts that have birthdays in the next 7 days.
         The function takes an optional parameter, days, which is set to 7 by default.
@@ -167,6 +181,8 @@ async def list_birthdays(days:int = 7, current_user: User = Depends(auth_service
     :param db: Session: Create a connection to the database
     :return: A list of lists
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     list_contacts = []
     for i in range(days):
         new_days = (datetime.now() + timedelta(days=i)).date()
@@ -176,7 +192,7 @@ async def list_birthdays(days:int = 7, current_user: User = Depends(auth_service
 
 
 @router.get("/search/email", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_contacts_email(email: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_email(email: str, credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for a user's contacts by email.
 
@@ -185,11 +201,13 @@ async def search_contacts_email(email: str, current_user: User = Depends(auth_se
     :param db: Session: Access the database
     :return: A list of contacts
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     list_contacts = db.query(Contact).filter(and_(Contact.email == email, Contact.user_id == current_user.id)).all()
     return list_contacts
 
 @router.get("/search/first_name", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_contacts_firstname(first_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_firstname(first_name: str, credentials: HTTPAuthorizationCredentials = Security(security),  current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts in the database that match a given first name.
 
@@ -198,11 +216,13 @@ async def search_contacts_firstname(first_name: str, current_user: User = Depend
     :param db: Session: Connect to the database
     :return: A list of contacts that match the first name provided
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     list_contacts = db.query(Contact).filter(and_(Contact.first_name == first_name, Contact.user_id == current_user.id)).all()
     return list_contacts
 
 @router.get("/search/last_name", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_contacts_lastname(last_name: str, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_lastname(last_name: str, credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts by last name.
         The function takes a string as an argument and returns a list of contacts.
@@ -212,11 +232,13 @@ async def search_contacts_lastname(last_name: str, current_user: User = Depends(
     :param db: Session: Get the database session
     :return: A list of contacts
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     list_contacts = db.query(Contact).filter(and_(Contact.last_name == last_name, Contact.user_id == current_user.id)).all()
     return list_contacts
 
 @router.get("/search", response_model=List[ContactResponse], dependencies=[Depends(RateLimiter(times=10, seconds=60))])
-async def search_contacts_all(email: str = None, first_name: str = None, last_name: str = None, current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
+async def search_contacts_all(email: str = None, first_name: str = None, last_name: str = None, credentials: HTTPAuthorizationCredentials = Security(security), current_user: User = Depends(auth_service.get_current_user), db: Session = Depends(get_db)):
     """
     The search_users function searches for contacts in the database.
         It takes three optional parameters: email, first_name and last_name.
@@ -231,6 +253,8 @@ async def search_contacts_all(email: str = None, first_name: str = None, last_na
     :param db: Session: Get the database session
     :return: A list of contacts
     """
+    if current_user is None:
+        current_user = auth_service.get_current_user(token = credentials.credentials, db=db)
     if email and first_name and last_name:
         list_contacts = db.query(Contact).filter(and_(Contact.email == email, Contact.last_name == last_name, Contact.first_name == first_name, Contact.user_id == current_user.id)).all()
     elif not email:

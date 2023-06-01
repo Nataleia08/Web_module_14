@@ -44,12 +44,6 @@ class TestRoutsAuth(unittest.IsolatedAsyncioTestCase):
             await login(body=body_oauth, db=self.session)
 
 
-    async def test_refresh_token(self):
-        pass
-
-    async def test_refresh_token_failed(self):
-        pass
-
     async def test_request_email(self):
         body = RequestEmail(email="test9@gmail.com")
         background_tasks = MagicMock(spec=BackgroundTasks)

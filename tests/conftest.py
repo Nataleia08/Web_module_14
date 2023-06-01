@@ -50,4 +50,4 @@ def client(session):
 
 @pytest.fixture(scope="module")
 def user():
-    return {"username": "nataleia", "email": "nataleia.orlovska@gmail.com", "password": "123456789"}
+    return {"username": "nataleia", "email": "nataleia@meta.ua", "password": "123456789"}

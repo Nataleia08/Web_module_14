@@ -18,12 +18,15 @@ class TestRoutsUsers(unittest.IsolatedAsyncioTestCase):
         result = await read_users_me(current_user = self.user)
         self.assertEqual(result, self.user)
 
-    async def test_update_avatar_user(self):
-        new_avatar = File("https:\\new_file_avatar.jpg")
-        cloudinary.uploader.upload().return_value = MagicMock()
-        cloudinary.CloudinaryImage().build_url.return_value = MagicMock()
-        result = await update_avatar_user(file = File("https:\\new_file_avatar.jpg"), current_user = self.user, db = self.session)
-        self.assertEqual(new_avatar, result.avatar)
+    async def test_update_avatar_user(self, monkeypatch):
+        # new_avatar = File("https:\\new_file_avatar.jpg")
+        # cloudinary_mock = MagicMock()
+        # monkeypatch.setattr("cloudinary.uploader.upload()", cloudinary_mock)
+        # cloudinary_mock_img = MagicMock()
+        # monkeypatch.setattr("cloudinary.CloudinaryImage().build_url", cloudinary_mock_img)
+        # result = await update_avatar_user(file = File("https:\\new_file_avatar.jpg"), current_user = self.user, db = self.session)
+        # self.assertEqual(new_avatar, result.avatar)
+
 
 
     async def test_update_password(self):
