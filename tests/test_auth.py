@@ -69,7 +69,24 @@ def test_login_wrong_email(client, user):
     data = response.json()
     assert data["detail"] == "Invalid email"
 
-def test_refresh_token(client, session, user):
+def test_refresh_token(client, session, user, monkeypatch):
+    current_user: User = session.query(User).filter(User.email == user.get('email')).first()
+    current_user.confirmed_email = True
+    session.commit()
+    response = client.post(
+        "/api/auth/login",
+        data={"username": user.get('email'), "password": user.get('password')},
+    )
+    data = response.json()
+    token = data["refresh_token"]
+    # current_user.refresh_token = token
+    response2 = client.get("/api/auth/refresh_token", headers={"Authorization": f"Bearer {token}"},)
+    data = response2.json()
+    assert response2.status_code == 200, response.text
+    assert data["token_type"] == "bearer"
+
+
+def test_refresh_token_failed(client, session, user):
     current_user: User = session.query(User).filter(User.email == user.get('email')).first()
     current_user.confirmed_email = True
     session.commit()
@@ -79,12 +96,9 @@ def test_refresh_token(client, session, user):
     )
     data = response.json()
     token = data["access_token"]
-    response2 = client.get("/refresh_token", headers={"Authorization": f"Bearer {token}"})
-    assert response2.status_code == 200, response.text
-
-
-def test_refresh_token_failed(client, session, user):
-    pass
+    response2 = client.get("/api/auth/refresh_token", headers={"Authorization": f"Bearer {token}"},)
+    # data = response2.json()
+    assert response2.status_code == 401, response.text
 
 if __name__ == "__main__":
     pytest.main()
